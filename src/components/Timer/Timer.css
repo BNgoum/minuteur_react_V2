@@ -1,0 +1,62 @@
+h1 {
+    font-size: 3rem;
+    text-align: center;
+    margin: 0;
+}
+
+h1, p {
+    color: #fff;
+}
+
+.timer {
+    display: flex;
+    justify-content: center;
+    font-size: 3em;
+    text-align: center;
+}
+
+.timer div {
+    display: flex;
+    justify-content: center;
+}
+
+.timer h1 {
+    position: relative;
+}
+
+.icone-cloche {
+    height: 150px;
+    position: absolute;
+    right: -150px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.container {
+    width: 100vw;
+    height: 100vh;
+    background: rgb(32, 32, 32);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.wrapper-block-finish {
+    display: flex;
+    justify-content: center;
+}
+
+.wrapper-cuisson-en-cours {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.timer-text {
+    font-size: 4rem;
+    font-weight: bold;
+}
+
+.icone-flammes {
+    height: 150px;
+}
