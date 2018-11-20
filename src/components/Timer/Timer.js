@@ -1,85 +1,126 @@
 import React from 'react';
 import './Timer.css';
-import flammes from '../../img/flammes.svg';
-import cloche from '../../img/plat.svg';
+import TimerDisplay from '../TimerDisplay/TimerDisplay';
 
 class Timer extends React.Component {
 	constructor(props) {
   	super();
     this.state = {
-      temps: props.duree,
-      secondes: 0
+      libelle: "",
+      temps: 0,
+      heures: 0,
+      minutes: 0,
+      secondes: 0,
+      step1: true,
+      step2: false
     }
-  }
-
-  componentDidMount() {
-    if ( !Number.isInteger( this.state.temps / 60 ) ) {
-      let floatRestant = ( this.state.temps / 60 ) - ( Math.trunc(this.state.temps / 60 ));
-      this.setState({ secondes: Math.round(floatRestant*60) }
-    )}
-    this.timerID = setInterval(
-      () => this.tick(),
-      1000
-    );
   }
 
   componentWillUnmount() {
     clearInterval( this.timerID );
   }
 
+  inputTimeToSecondes() {
+    let res = 0;
+    if (this.state.heures > 0) {
+      res = res + this.state.heures * 3600;
+    }
+
+    if (this.state.minutes > 0) {
+      res = res + this.state.minutes * 60;
+    }
+
+    if (this.state.secondes > 0) {
+      res = res + this.state.secondes;
+    }
+
+    return res;
+  }
+
+  affichageStep1() {
+    return (
+      <div className="wrapper-step1">
+        <input type="text" name="name" onChange={this.handleChangeLibelle} placeholder="Saisissez le nom du plat" />
+        <div className="wrapper-inputs-text">
+          <input type="number" name="saisie des minutes" placeholder="Minutes" onChange={this.handleChangeMinutes} min="0" max="59"/>
+          <p>:</p>
+          <input type="number" name="saisie des secondes" placeholder="Secondes" onChange={this.handleChangeSecondes} min="0" max="59"/>
+        </div>
+
+        <button className="button-start" onClick={this.handleChangeStep}>Start</button>
+      </div>
+    )
+  }
+
   tick() {
     if ( this.state.secondes === 0 ) {
       this.setState({
         secondes: 59,
-        temps: this.state.temps-1
+        minutes: this.state.minutes - 1
       })
     } else {
       this.setState({
-        temps: this.state.temps-1,
-        secondes: this.state.secondes-1
+        secondes: this.state.secondes - 1
       });
     }
   }
 
-  secondesToMinutes() {
-    if ( this.state.temps/60 === 1 ) { return '00'; }
+  handleChangeStep = () => {
+    this.setState({
+      step1: false,
+      step2: true,
+      temps: this.inputTimeToSecondes()
+    })
 
-    if (( this.state.temps / 60) < 10 ) { return '0' + Math.trunc( this.state.temps / 60 ) }
-
-    return Math.trunc( this.state.temps / 60 );
+    this.timerID = setInterval(
+      () => this.tick(),
+      1000
+    );
   }
 
-  affichageSecondes() {
-    if ( this.state.secondes < 10 ) { return '0' + this.state.secondes }
-
-    return this.state.secondes;
+  handleChangeLibelle = (e) => {
+    this.setState({
+      libelle: e.target.value
+    })
   }
 
-  affichageTimer() {
-    if (this.state.temps === 0) {
-      clearInterval(this.timerID);
+  handleChangeHeures = (e) => {
+    this.setState({
+      heures: e.target.value
+    })
+  }
 
-      return (
-        <h1>Votre plat : {this.props.libelle} est prêt ! <img src={cloche} alt="cloche animation" className="icone-cloche"/></h1>
-      );
+  handleChangeMinutes = (e) => {
+    if (e.target.value > 59) {
+      e.target.value = 59;
     }
 
-    return (
-      <div className="wrapper-cuisson-en-cours">
-        <h1>La cuisson de votre plat : <br/> {this.props.libelle} <br/> est en cours...</h1>
-        <img src={flammes} alt="flammes animation" className="icone-flammes" />
-        <p className="timer-text">
-          {this.secondesToMinutes()} : {this.affichageSecondes()}
-        </p>
-      </div>
-      
-    );
+    this.setState({
+      minutes: parseInt(e.target.value)
+    })
+  }
+
+  handleChangeSecondes = (e) => {
+    if (e.target.value > 59) {
+      e.target.value = 59;
+    }
+
+    this.setState({
+      secondes: e.target.value
+    })
   }
   
   render() {
   	return (
-      <div className="container">
-        <div className="timer">{this.affichageTimer()}</div>
+      <div className="container-timer">
+        {this.state.step1 ? 
+          this.affichageStep1() : 
+          <TimerDisplay 
+            minutes={this.state.minutes} 
+            secondes={this.state.secondes} 
+            libelle={this.state.libelle} 
+            timer={this.timerID} />
+        }
       </div>
     )
   }
